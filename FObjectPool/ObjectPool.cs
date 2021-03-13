@@ -14,7 +14,7 @@ namespace FObjectPool
 
 		public int MaxCount
 		{
-			get { return MaxCount; }
+			get { return maxCount; }
 			set { maxCount = value > MaxCount ? value : MaxCount; }
 		}
 
@@ -25,12 +25,6 @@ namespace FObjectPool
 
 		public ObjectPool(IEnumerable<TObject> initialObjects)
 		{
-			pool = new Queue<TObject>(initialObjects);
-		}
-
-		public ObjectPool(IEnumerable<TObject> initialObjects, int maxCount)
-		{
-			MaxCount = maxCount;
 			pool = new Queue<TObject>(initialObjects);
 		}
 
@@ -45,17 +39,11 @@ namespace FObjectPool
 			pool = new Queue<TObject>();
 		}
 
-		public ObjectPool(Func<TObject> objectCreation, int maxCount)
+		public ObjectPool(int maxCount)
 		{
-			if (objectCreation is null)
-			{
-				throw new ArgumentNullException(nameof(objectCreation));
-			}
-
-			MaxCount = maxCount;
-			this.objectCreation = objectCreation;
 			pool = new Queue<TObject>();
-		}
+			this maxCount = maxCount;
+ 		}
 
 		public ObjectPool(Func<TObject> objectCreation, IEnumerable<TObject> initialObjects)
 		{
@@ -64,8 +52,25 @@ namespace FObjectPool
 				throw new ArgumentNullException(nameof(objectCreation));
 			}
 
-			MaxCount = maxCount;
 			this.objectCreation = objectCreation;
+			pool = new Queue<TObject>(initialObjects);
+		}
+
+		public ObjectPool(Func<TObject> objectCreation, int maxCount)
+		{
+			if (objectCreation is null)
+			{
+				throw new ArgumentNullException(nameof(objectCreation));
+			}
+
+			this.maxCount = maxCount;
+			this.objectCreation = objectCreation;
+			pool = new Queue<TObject>();
+		}
+
+		public ObjectPool(IEnumerable<TObject> initialObjects, int maxCount)
+		{
+			this.maxCount = maxCount;
 			pool = new Queue<TObject>(initialObjects);
 		}
 
@@ -80,7 +85,7 @@ namespace FObjectPool
 				throw new ArgumentException("Maximum items count can not be less than initial objects count", nameof(maxCount));
 			}
 
-			MaxCount = maxCount;
+			this.maxCount = maxCount;
 			this.objectCreation = objectCreation;
 			pool = new Queue<TObject>(initialObjects);
 		}
