@@ -42,7 +42,7 @@ namespace FObjectPool
 		public ObjectPool(int maxCount)
 		{
 			pool = new Queue<TObject>();
-			this maxCount = maxCount;
+			this.maxCount = maxCount;
  		}
 
 		public ObjectPool(Func<TObject> objectCreation, IEnumerable<TObject> initialObjects)
