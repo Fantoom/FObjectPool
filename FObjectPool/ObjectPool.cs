@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace FObjectPool
 {
@@ -46,49 +45,24 @@ namespace FObjectPool
 			this.maxCount = maxCount;
  		}
 
-		public ObjectPool(Func<TObject> objectCreation, IEnumerable<TObject> initialObjects)
+		public ObjectPool(Func<TObject> objectCreation = null, IEnumerable<TObject> initialObjects = null, int maxCount = int.MaxValue)
 		{
-			if (objectCreation is null)
-			{
-				throw new ArgumentNullException(nameof(objectCreation));
-			}
 
-			this.objectCreation = objectCreation;
-			pool = new Queue<TObject>(initialObjects);
-		}
-
-		public ObjectPool(Func<TObject> objectCreation, int maxCount)
-		{
-			if (objectCreation is null)
-			{
-				throw new ArgumentNullException(nameof(objectCreation));
-			}
-
-			this.maxCount = maxCount;
-			this.objectCreation = objectCreation;
-			pool = new Queue<TObject>();
-		}
-
-		public ObjectPool(IEnumerable<TObject> initialObjects, int maxCount)
-		{
-			this.maxCount = maxCount;
-			pool = new Queue<TObject>(initialObjects);
-		}
-
-		public ObjectPool(Func<TObject> objectCreation, IEnumerable<TObject> initialObjects, int maxCount)
-		{
-			if (objectCreation is null)
-			{
-				throw new ArgumentNullException(nameof(objectCreation));
-			}
-			if (initialObjects.Count() < maxCount)
+			if (initialObjects != null && initialObjects.Count() < maxCount)
 			{
 				throw new ArgumentException("Maximum items count can not be less than initial objects count", nameof(maxCount));
 			}
 
 			this.maxCount = maxCount;
-			this.objectCreation = objectCreation;
-			pool = new Queue<TObject>(initialObjects);
+			this.objectCreation = objectCreation ?? this.objectCreation;
+			if(initialObjects != null)
+			{ 
+				pool = new Queue<TObject>(initialObjects);
+			}
+			else
+            {
+				pool = new Queue<TObject>();
+			}
 		}
 
 		public void FillPool(int count)
@@ -132,34 +106,6 @@ namespace FObjectPool
 				}
 			}
 			else 
-			{
-				obj = pool.Dequeue();
-			}
-			OnGet(obj);
-			return new ObjectPoolItem<TObject>(this, obj);
-		}
-
-		public async Task<ObjectPoolItem<TObject>> GetObjectAsync()
-		{
-			TObject obj;
-			if (pool.Count == 0)
-			{
-				if (objectCreation != null)
-				{
-					obj = objectCreation();
-				}
-				else 
-				{
-					await Task.Run(() => 
-					{
-						while(pool.Count == 0)
-                        {
-                        }
-					});
-					obj = pool.Dequeue();
-				}
-			}
-			else
 			{
 				obj = pool.Dequeue();
 			}
