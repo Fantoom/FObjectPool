@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FObjectPool
 {
@@ -122,12 +123,43 @@ namespace FObjectPool
 
 		public ObjectPoolItem<TObject> GetObject()
 		{
+			TObject obj = default;
+			if (pool.Count == 0)
+			{
+				if (objectCreation != null)
+				{
+					obj = objectCreation();
+				}
+			}
+            else 
+			{
+				obj = pool.Dequeue();
+			}
+			OnGet(obj);
+			return new ObjectPoolItem<TObject>(this, obj);
+		}
+
+		public async Task<ObjectPoolItem<TObject>> GetObjectAsync()
+		{
 			TObject obj;
 			if (pool.Count == 0)
 			{
-				obj = objectCreation();
+				if (objectCreation != null)
+				{
+					obj = objectCreation();
+				}
+                else 
+				{
+					await Task.Run(() => 
+					{
+						while(pool.Count == 0)
+                        {
+                        }
+					});
+					obj = pool.Dequeue();
+				}
 			}
-            else 
+			else
 			{
 				obj = pool.Dequeue();
 			}
