@@ -91,7 +91,10 @@ namespace FObjectPool
 			}
 			foreach (var item in objects)
 			{
-				AddObject(item);
+				if (!AddObject(item))
+				{
+					break;
+				}
 			}
 		}
 
