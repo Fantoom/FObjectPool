@@ -131,7 +131,7 @@ namespace FObjectPool
 					obj = objectCreation();
 				}
 			}
-            else 
+			else 
 			{
 				obj = pool.Dequeue();
 			}
@@ -148,7 +148,7 @@ namespace FObjectPool
 				{
 					obj = objectCreation();
 				}
-                else 
+				else 
 				{
 					await Task.Run(() => 
 					{
