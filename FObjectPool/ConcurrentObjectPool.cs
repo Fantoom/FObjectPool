@@ -30,7 +30,6 @@ namespace FObjectPool
 			pool = new ConcurrentQueue<TObject>();
 			getSemaphore = new SemaphoreSlim(0);
 			addSemaphore = new SemaphoreSlim(maxCount);
-
 		}
 
 		public ConcurrentObjectPool(IEnumerable<TObject> initialObjects)
