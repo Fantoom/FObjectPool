@@ -13,7 +13,7 @@ namespace FObjectPool
 		private ConcurrentQueue<TObject> pool;
 		private SemaphoreSlim getSemaphore;
 		private SemaphoreSlim addSemaphore;
-
+		private Object locker = new Object();
 
 		public event Action<TObject> OnAdd = delegate { };
 		public event Action<TObject> OnGet = delegate { };
@@ -138,19 +138,23 @@ namespace FObjectPool
 
 		public async Task<bool> AddObjectAsync(TObject objectToAdd, int millisecondsTimeout = -1, CancellationToken token = default)
 		{
-
 			if (await addSemaphore.WaitAsync(millisecondsTimeout, token))
 			{
-				if (!pool.Contains(objectToAdd) && pool.Count < maxCount)
+				lock (locker)
 				{
-					pool.Enqueue(objectToAdd);
-					OnAdd(objectToAdd);
-					getSemaphore.Release();
-					return true;
-				}
-				else
-				{
-					return false;
+
+
+					if (!pool.Contains(objectToAdd) && pool.Count < maxCount)
+					{
+						pool.Enqueue(objectToAdd);
+						OnAdd(objectToAdd);
+						getSemaphore.Release();
+						return true;
+					}
+					else
+					{
+						return false;
+					}
 				}
 			}
 			else
