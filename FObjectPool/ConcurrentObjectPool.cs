@@ -9,7 +9,6 @@ namespace FObjectPool
 {
 	public class ConcurrentObjectPool<TObject>
 	{
-
 		private ConcurrentQueue<TObject> pool;
 		private SemaphoreSlim getSemaphore;
 		private SemaphoreSlim addSemaphore;
@@ -142,8 +141,6 @@ namespace FObjectPool
 			{
 				lock (locker)
 				{
-
-
 					if (!pool.Contains(objectToAdd) && pool.Count < maxCount)
 					{
 						pool.Enqueue(objectToAdd);
@@ -163,5 +160,4 @@ namespace FObjectPool
 			}
 		}
 	}
-
 }
