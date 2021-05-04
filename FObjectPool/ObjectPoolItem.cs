@@ -7,8 +7,7 @@ namespace FObjectPool
 	public class ObjectPoolItem<TItem> : IDisposable
 	{
 		public ObjectPool<TItem> Pool { get; private set; }
-		public TItem item { get; private set; }
-
+		public TItem item;
 		public TItem Item
 		{
 			get
