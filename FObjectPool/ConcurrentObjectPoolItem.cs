@@ -4,11 +4,10 @@ using System.Threading.Tasks;
 
 namespace FObjectPool
 {
-	public class ConcurrentObjectPoolItem<TItem> : IDisposable
+	public class ConcurrentObjectPoolItem<TItem> : IObjectPoolItem<TItem>
 	{
 		public ConcurrentObjectPool<TItem> Pool { get; private set; }
-		public TItem item { get; private set; }
-
+		private TItem item;
 		public TItem Item
 		{
 			get
@@ -29,12 +28,12 @@ namespace FObjectPool
 			Item = item;
 		}
 
-		public void BackToPool()
+		public void ReturnToPool()
 		{
 			Dispose();
 		}
 
-		public async Task<bool> BackToPool(int millisecondsTimeout = -1, CancellationToken token = default)
+		public async Task<bool> ReturnToPool(CancellationToken token = default, int millisecondsTimeout = -1)
 		{
 			var isAdded = await Pool.AddObjectAsync(Item, millisecondsTimeout, token);
 			if (isAdded)

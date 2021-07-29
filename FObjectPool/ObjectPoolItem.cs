@@ -4,10 +4,10 @@ using System.Text;
 
 namespace FObjectPool
 {
-	public class ObjectPoolItem<TItem> : IDisposable
+	public class ObjectPoolItem<TItem> : IObjectPoolItem<TItem>
 	{
 		public ObjectPool<TItem> Pool { get; private set; }
-		public TItem item { get; private set; }
+		private TItem item;
 
 		public TItem Item
 		{
@@ -29,7 +29,7 @@ namespace FObjectPool
 			Item = item;
 		}
 
-		public void BackToPool()
+		public void ReturnToPool()
 		{
 			Dispose();
 		}
