@@ -16,7 +16,7 @@ namespace FObjectPool
 
 		public event Action<TObject> OnAdd = delegate { };
 		public event Action<TObject> OnGet = delegate { };
-		private Func<TObject> objectCreation;
+		private Func<TObject>? objectCreation;
 		private int maxCount = int.MaxValue;
 
 		public int MaxCount
@@ -59,7 +59,7 @@ namespace FObjectPool
 			addSemaphore = new SemaphoreSlim(maxCount);
 		}
 
-		public ConcurrentObjectPool(Func<TObject> objectCreation = null, IEnumerable<TObject> initialObjects = null, int maxCount = int.MaxValue)
+		public ConcurrentObjectPool(Func<TObject>? objectCreation = null, IEnumerable<TObject>? initialObjects = null, int maxCount = int.MaxValue)
 		{
 			if (initialObjects != null && initialObjects.Count() < maxCount)
 			{
@@ -114,16 +114,16 @@ namespace FObjectPool
 			}
 		}
 
-		public async Task<ConcurrentObjectPoolItem<TObject>> GetObjectAsync(int millisecondsTimeout = -1, CancellationToken token = default)
+		public async Task<ConcurrentObjectPoolItem<TObject>> GetObjectAsync(int millisecondsTimeout = -1, CancellationToken? token = default)
 		{
-			TObject obj = default;
+			TObject obj = default!;
 			if (pool.Count == 0 && objectCreation != null)
 			{
 				obj = objectCreation();
 			}
 			else
 			{
-				if (await getSemaphore.WaitAsync(millisecondsTimeout, token))
+				if (await getSemaphore.WaitAsync(millisecondsTimeout, (CancellationToken)(token!)))
 				{
 					if (pool.TryDequeue(out obj))
 					{

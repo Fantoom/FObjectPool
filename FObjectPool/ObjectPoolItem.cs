@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FObjectPool
 {
-	public class ObjectPoolItem<TItem> : IObjectPoolItem<TItem>
+	public struct ObjectPoolItem<TItem>
 	{
 		public ObjectPool<TItem> Pool { get; private set; }
 		private TItem item;
@@ -26,19 +26,14 @@ namespace FObjectPool
 		public ObjectPoolItem(ObjectPool<TItem> pool, TItem item)
 		{
 			Pool = pool;
-			Item = item;
+			this.item = item;
 		}
 
 		public void ReturnToPool()
 		{
-			Dispose();
-		}
-
-		public void Dispose()
-		{
 			Pool.AddObject(Item);
 			disposed = true;
-			item = default;
+			item = default!;
 		}
 	}
 }

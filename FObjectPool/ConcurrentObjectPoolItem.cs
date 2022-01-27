@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace FObjectPool
 {
-	public class ConcurrentObjectPoolItem<TItem> : IObjectPoolItem<TItem>
+	public struct ConcurrentObjectPoolItem<TItem>
 	{
 		public ConcurrentObjectPool<TItem> Pool { get; private set; }
 		private TItem item;
@@ -25,12 +25,7 @@ namespace FObjectPool
 		public ConcurrentObjectPoolItem(ConcurrentObjectPool<TItem> pool, TItem item)
 		{
 			Pool = pool;
-			Item = item;
-		}
-
-		public void ReturnToPool()
-		{
-			Dispose();
+			this.item = item;
 		}
 
 		public async Task<bool> ReturnToPool(CancellationToken token = default, int millisecondsTimeout = -1)
@@ -39,16 +34,9 @@ namespace FObjectPool
 			if (isAdded)
 			{
 				disposed = true;
-				item = default;
+				item = default!;
 			}
 			return isAdded;
-		}
-
-		public void Dispose()
-		{
-			Pool.AddObjectAsync(Item);
-			disposed = true;
-			item = default;
 		}
 	}
 }

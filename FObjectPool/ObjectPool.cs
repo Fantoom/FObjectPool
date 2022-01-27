@@ -9,7 +9,7 @@ namespace FObjectPool
 		private Queue<TObject> pool;
 		public event Action<TObject> OnAdd = delegate { };
 		public event Action<TObject> OnGet = delegate { };
-		private Func<TObject> objectCreation;
+		private Func<TObject>? objectCreation;
 		private int maxCount = int.MaxValue;
 
 		public int MaxCount
@@ -45,7 +45,7 @@ namespace FObjectPool
 			this.maxCount = maxCount;
  		}
 
-		public ObjectPool(Func<TObject> objectCreation = null, IEnumerable<TObject> initialObjects = null, int maxCount = int.MaxValue)
+		public ObjectPool(Func<TObject>? objectCreation = null, IEnumerable<TObject>? initialObjects = null, int maxCount = int.MaxValue)
 		{
 
 			if (initialObjects != null && initialObjects.Count() < maxCount)
@@ -100,7 +100,7 @@ namespace FObjectPool
 
 		public ObjectPoolItem<TObject> GetObject()
 		{
-			TObject obj = default;
+			TObject obj = default!;
 			if (pool.Count == 0)
 			{
 				if (objectCreation != null)
