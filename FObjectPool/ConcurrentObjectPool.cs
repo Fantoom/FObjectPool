@@ -9,20 +9,19 @@ namespace FObjectPool
 {
 	public class ConcurrentObjectPool<TObject>
 	{
-		private ConcurrentQueue<TObject> pool;
-		private SemaphoreSlim getSemaphore;
-		private SemaphoreSlim addSemaphore;
-		private Object locker = new Object();
-
 		public event Action<TObject> OnAdd = delegate { };
 		public event Action<TObject> OnGet = delegate { };
-		private Func<TObject>? objectCreation;
-		private int maxCount = int.MaxValue;
-
 		public int MaxCount
 		{
 			get { return maxCount; }
 		}
+
+		private ConcurrentQueue<TObject> pool;
+		private SemaphoreSlim getSemaphore;
+		private SemaphoreSlim addSemaphore;
+		private object locker = new();
+		private Func<TObject>? objectCreation;
+		private int maxCount = int.MaxValue;
 
 		public ConcurrentObjectPool()
 		{

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,17 +7,18 @@ namespace FObjectPool
 {
 	public class ObjectPool<TObject>
 	{
-		private Queue<TObject> pool;
 		public event Action<TObject> OnAdd = delegate { };
 		public event Action<TObject> OnGet = delegate { };
-		private Func<TObject>? objectCreation;
-		private int maxCount = int.MaxValue;
-
+		public int Count { get => pool.Count; }
 		public int MaxCount
 		{
 			get { return maxCount; }
 			set { maxCount = value > MaxCount ? value : MaxCount; }
 		}
+
+		private Queue<TObject> pool;
+		private Func<TObject>? objectCreation;
+		private int maxCount = int.MaxValue;
 
 		public ObjectPool()
 		{
@@ -48,9 +50,9 @@ namespace FObjectPool
 		public ObjectPool(Func<TObject>? objectCreation = null, IEnumerable<TObject>? initialObjects = null, int maxCount = int.MaxValue)
 		{
 
-			if (initialObjects != null && initialObjects.Count() < maxCount)
+			if (initialObjects != null && initialObjects.Count() > maxCount)
 			{
-				throw new ArgumentException("Maximum items count can not be less than initial objects count", nameof(maxCount));
+				throw new ArgumentException("Initial objects count can not be greater than maximum items count", nameof(maxCount));
 			}
 
 			this.maxCount = maxCount;
@@ -129,5 +131,5 @@ namespace FObjectPool
 				return false;
 			}
 		}
-	}
+    }
 }
